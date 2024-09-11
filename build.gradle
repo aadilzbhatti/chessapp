@@ -1,0 +1,41 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.13' // JavaFX plugin
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+apply plugin: 'idea'
+apply plugin: 'java'
+
+application {
+    mainClass = 'ChessApp'  // Replace with your main class
+}
+
+repositories {
+    mavenCentral()
+}
+
+javafx {
+    version = "19" // Adjust the version based on your JavaFX version
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
+dependencies {
+    implementation 'org.openjfx:javafx-controls:19'
+    implementation 'org.openjfx:javafx-fxml:19'
+    // JUnit 5 (Jupiter API)
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+
+    // JUnit 5 Engine (required to run the tests)
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+}
+
+test {
+    useJUnitPlatform()  // Enables JUnit 5
+}
