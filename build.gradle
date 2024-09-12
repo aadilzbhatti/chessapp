@@ -13,7 +13,8 @@ apply plugin: 'idea'
 apply plugin: 'java'
 
 application {
-    mainClass = 'ChessApp'  // Replace with your main class
+    mainClass = 'com.chessapp.ChessApp'
+    applicationDefaultJvmArgs = ["--module-path", "${System.properties['java.home']}/lib", "--add-modules", "javafx.controls,javafx.fxml"]
 }
 
 repositories {
@@ -21,7 +22,7 @@ repositories {
 }
 
 javafx {
-    version = "19" // Adjust the version based on your JavaFX version
+    version = "19"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
@@ -33,7 +34,6 @@ dependencies {
 
     // JUnit 5 Engine (required to run the tests)
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 test {
