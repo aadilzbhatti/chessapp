@@ -1,7 +1,6 @@
 package com.chessapp.api.pieces.piece;
 
-import com.chessapp.api.game.BoardPosition;
-import com.chessapp.api.pieces.utils.ChessPieceName;
+import com.chessapp.api.board.BoardPosition;
 import com.chessapp.api.pieces.utils.ChessSide;
 import com.chessapp.api.pieces.utils.InvalidPositionException;
 
@@ -20,7 +19,7 @@ public class Utils {
      * @param rightY The y-position if the piece is on the right
      */
     public static void setPosWithSide(ChessPiece piece, int leftX, int leftY, int rightX, int rightY) {
-        if (piece.side == ChessSide.LEFT) {
+        if (piece.getSide() == ChessSide.LEFT) {
             piece.setPos(leftX, leftY);
         } else {
             piece.setPos(rightX, rightY);
@@ -53,15 +52,15 @@ public class Utils {
             throw new InvalidPositionException("Final position is result of an invalid move.");
         }
 
-        if (mine.getName() == ChessPieceName.BISHOP) {
+        if (mine.getName() == PieceName.BISHOP) {
             if (Utils.bishopPiecesInWay(mine, newX, newY, position)) {
                 throw new InvalidPositionException("Cannot move when pieces in way");
             }
-        } else if (mine.getName() == ChessPieceName.ROOK) {
+        } else if (mine.getName() == PieceName.ROOK) {
             if (Utils.rookPiecesInWay(mine, newX, newY, position)) {
                 throw new InvalidPositionException("Cannot move when pieces in way");
             }
-        } else if (mine.getName() == ChessPieceName.QUEEN) {
+        } else if (mine.getName() == PieceName.QUEEN) {
             if (Utils.queenPiecesInWay(mine, newX, newY, position)) {
                 throw new InvalidPositionException("Cannot move when pieces in way");
             }
@@ -78,7 +77,7 @@ public class Utils {
      * @throws InvalidPositionException
      */
     public static void makeValidMove(ChessPiece piece, int newX, int newY, BoardPosition position) throws InvalidPositionException {
-        position.leavePosition(piece);
+        position.removePiece(piece);
         piece.setPos(newX, newY);
         position.occupyPosition(newX, newY, piece);
     }
@@ -94,7 +93,7 @@ public class Utils {
      */
     public static ChessPiece takePieceAndMove(ChessPiece mine, int newX, int newY, BoardPosition position) throws InvalidPositionException {
         ChessPiece taken = position.getPieceAtPosition(newX, newY);
-        position.leavePosition(taken);
+        position.removePiece(taken);
         makeValidMove(mine, newX, newY, position);
         return taken;
     }

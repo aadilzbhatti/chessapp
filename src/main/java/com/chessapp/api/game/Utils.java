@@ -1,7 +1,9 @@
 package com.chessapp.api.game;
 
+import com.chessapp.api.board.BoardPosition;
 import com.chessapp.api.pieces.piece.ChessPiece;
-import com.chessapp.api.pieces.utils.ChessPieceName;
+
+import static com.chessapp.ConstantsKt.BOARD_SIZE;
 
 /**
  * Utility functions used for determining whether or not
@@ -37,7 +39,7 @@ class Utils {
 
         i = currX;
         j = currY;
-        while (i >= 0 && j < position.getSize()) {
+        while (i >= 0 && j < BOARD_SIZE) {
             ChessPiece chosen = position.getPieceAtPosition(i--, j++);
             if (chosen != null && chosen != bishop) {
                 if (isOpposingKing(chosen, player)) {
@@ -330,6 +332,6 @@ class Utils {
      * @return Whether or not the piece is the other player's king
      */
     private static boolean isOpposingKing(ChessPiece piece, ChessPlayer player) {
-        return piece != null && piece.getName() == ChessPieceName.KING && piece != player.king;
+        return piece != null && piece.getName() == PieceName.KING && piece != player.king;
     }
 }

@@ -1,20 +1,34 @@
 plugins {
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.13' // JavaFX plugin
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'org.jetbrains.kotlin.jvm' version '2.0.20'
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(11) // Ensures Java 11 is used
     }
 }
 
-apply plugin: 'idea'
-apply plugin: 'java'
-
 application {
     mainClass = 'com.chessapp.ChessApp'
-    applicationDefaultJvmArgs = ["--module-path", "${System.properties['java.home']}/lib", "--add-modules", "javafx.controls,javafx.fxml"]
+    applicationDefaultJvmArgs = [
+            "--module-path", "${System.properties['java.home']}/lib",
+            "--add-modules", "javafx.controls,javafx.fxml"
+    ]
+}
+
+sourceSets {
+    main {
+        java {
+            exclude 'com/chessapp/**'
+        }
+    }
+    test {
+        java {
+            exclude 'com/chessapp/**'
+        }
+    }
 }
 
 repositories {
@@ -27,15 +41,15 @@ javafx {
 }
 
 dependencies {
-    implementation 'org.openjfx:javafx-controls:19'
-    implementation 'org.openjfx:javafx-fxml:19'
-    // JUnit 5 (Jupiter API)
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    implementation "org.openjfx:javafx-controls:19"
+    implementation "org.openjfx:javafx-fxml:19"
 
-    // JUnit 5 Engine (required to run the tests)
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    // JUnit 5
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.10.0"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.10.0"
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.0'
 }
 
 test {
-    useJUnitPlatform()  // Enables JUnit 5
+    useJUnitPlatform() // Enables JUnit 5
 }

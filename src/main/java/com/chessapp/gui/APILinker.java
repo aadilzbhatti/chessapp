@@ -1,13 +1,11 @@
 package com.chessapp.gui;
 
-import com.chessapp.api.game.BoardPosition;
 import com.chessapp.api.game.ChessConditions;
 import com.chessapp.api.game.ChessPlayer;
 import com.chessapp.api.game.GameState;
 import com.chessapp.api.pieces.piece.ChessPiece;
 import com.chessapp.api.pieces.piece.Pawn;
-import com.chessapp.api.pieces.utils.ChessPieceColor;
-import com.chessapp.api.pieces.utils.ChessPieceName;
+import com.chessapp.api.pieces.piece.PieceColor;
 import com.chessapp.api.pieces.utils.InvalidPositionException;
 import com.chessapp.gui.utils.Point;
 import javafx.scene.image.ImageView;
@@ -19,30 +17,28 @@ import javafx.scene.shape.Rectangle;
  */
 public class APILinker {
     boolean checkmate = false;
-    private ChessPieceColor turn;
+    private PieceColor turn;
     private final ChessPlayer redPlayer;
     private final ChessPlayer whitePlayer;
-    private final BoardPosition position;
 
     /**
      * Default constructor, initializes the players and the holy board
      * position manager we have been talking about for three weeks.
      */
     public APILinker() {
-        position = new BoardPosition();
-        redPlayer = new ChessPlayer(ChessPieceColor.RED, position);
-        whitePlayer = new ChessPlayer(ChessPieceColor.WHITE, position);
-        turn = ChessPieceColor.WHITE;
+        redPlayer = new ChessPlayer(PieceColor.BLACK, position);
+        whitePlayer = new ChessPlayer(PieceColor.WHITE, position);
+        turn = PieceColor.WHITE;
     }
 
     /**
      * Change the current turn
      */
     public void changeTurn() {
-        if (turn == ChessPieceColor.RED) {
-            turn = ChessPieceColor.WHITE;
+        if (turn == PieceColor.RED) {
+            turn = PieceColor.WHITE;
         } else {
-            turn = ChessPieceColor.RED;
+            turn = PieceColor.RED;
         }
     }
 
@@ -51,7 +47,7 @@ public class APILinker {
      *
      * @return The current turn
      */
-    public ChessPieceColor currentTurn() {
+    public PieceColor currentTurn() {
         return turn;
     }
 
@@ -77,8 +73,8 @@ public class APILinker {
             if (attacked.getColor() == turn) {
                 throw new InvalidPositionException("Cannot attack your own pieces");
             }
-            currentPlayer.attack(currentPiece, attacked.x(), attacked.y(), position, otherPlayer);
-            if (attacked.getName() == ChessPieceName.KING) {
+            currentPlayer.capture(currentPiece, attacked.x(), attacked.y(), position, otherPlayer);
+            if (attacked.getName() == PieceName.KING) {
                 checkmate = true;
             }
             removeAttackedPiece(ChessBoard.boardSquares[targetSquare.Y()][targetSquare.X()]);
@@ -119,10 +115,10 @@ public class APILinker {
         Point currentPos = getPosFromCoords(oldX, oldY);
         Point nextPos = getPosFromCoords(newX, newY);
         ChessPiece currentPiece = position.getPieceAtPosition(currentPos.X(), currentPos.Y());
-        position.leavePosition(currentPiece);
+        position.removePiece(currentPiece);
         currentPiece.setPos(nextPos.X(), nextPos.Y());
         position.occupyPosition(nextPos.X(), nextPos.Y(), currentPiece);
-        if (currentPiece.getName() == ChessPieceName.PAWN) {
+        if (currentPiece.getName() == PieceName.PAWN) {
             Pawn p = (Pawn) currentPiece;
             p.reset();
         }
@@ -134,8 +130,8 @@ public class APILinker {
      * @param color The color allowed to move this turn
      * @return The player allowed to make moves this turn
      */
-    private ChessPlayer getPlayerForTurn(ChessPieceColor color) {
-        return color == ChessPieceColor.RED ? redPlayer : whitePlayer;
+    private ChessPlayer getPlayerForTurn(PieceColor color) {
+        return color == PieceColor.RED ? redPlayer : whitePlayer;
     }
 
     /**
@@ -145,7 +141,7 @@ public class APILinker {
      * @return The opponent of the current player
      */
     private ChessPlayer getOtherPlayer(ChessPlayer currentPlayer) {
-        return currentPlayer.pieceColor == ChessPieceColor.RED ? whitePlayer : redPlayer;
+        return currentPlayer.pieceColor == PieceColor.RED ? whitePlayer : redPlayer;
     }
 
     /**

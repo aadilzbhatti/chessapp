@@ -1,7 +1,6 @@
 package com.chessapp.gui;
 
 import com.chessapp.api.game.GameState;
-import com.chessapp.api.pieces.utils.ChessPieceColor;
 import com.chessapp.gui.utils.ChessImages;
 import com.chessapp.gui.utils.Constants;
 import javafx.application.Application;
@@ -33,7 +32,7 @@ import java.util.Optional;
  */
 
 public class ChessBoard extends Application {
-    private static final int BOARD_SIZE = Constants.BOARD_SIZE;
+    private static final int BOARD_SIZE = Constants.BOARD_SIZE_IN_PIXELS;
     private static final int OFFSET = Constants.OFFSET;
     public static Rectangle[][] boardSquares = new Rectangle[8][8];
     private static ArrayList<ImageView> views;
@@ -46,7 +45,7 @@ public class ChessBoard extends Application {
     ImageView lastMovedImage;
     double lastX;
     double lastY;
-    private HashMap<ImageView, ChessPieceColor> colorMap;
+    private HashMap<ImageView, PieceColor> colorMap;
     private ImageView currentPiece;
     /**
      * Event handler for chess pieces. When selected, we need to update the
@@ -237,28 +236,28 @@ public class ChessBoard extends Application {
      * @param images the images manager, used to load chess images
      */
     private void addPiecesToBoard(ChessImages images, StackPane board, Canvas gameCanvas) {
-        initializeImageView(images.redRook, Constants.LEFT_ROOK_X_POS, Constants.RED_Y_POS, ChessPieceColor.RED);
-        initializeImageView(images.redRook, Constants.RIGHT_ROOK_X_POS, Constants.RED_Y_POS, ChessPieceColor.RED);
-        initializeImageView(images.redKnight, Constants.LEFT_KNIGHT_X_POS, Constants.RED_Y_POS, ChessPieceColor.RED);
-        initializeImageView(images.redKnight, Constants.RIGHT_KNIGHT_X_POS, Constants.RED_Y_POS, ChessPieceColor.RED);
-        initializeImageView(images.redBishop, Constants.LEFT_BISHOP_X_POS, Constants.RED_Y_POS, ChessPieceColor.RED);
-        initializeImageView(images.redBishop, Constants.RIGHT_BISHOP_X_POS, Constants.RED_Y_POS, ChessPieceColor.RED);
-        initializeImageView(images.redQueen, Constants.QUEEN_X_POS, Constants.RED_Y_POS, ChessPieceColor.RED);
-        initializeImageView(images.redKing, Constants.KING_X_POS, Constants.RED_Y_POS, ChessPieceColor.RED);
+        initializeImageView(images.redRook, Constants.LEFT_ROOK_X_POS, Constants.RED_Y_POS, PieceColor.RED);
+        initializeImageView(images.redRook, Constants.RIGHT_ROOK_X_POS, Constants.RED_Y_POS, PieceColor.RED);
+        initializeImageView(images.redKnight, Constants.LEFT_KNIGHT_X_POS, Constants.RED_Y_POS, PieceColor.RED);
+        initializeImageView(images.redKnight, Constants.RIGHT_KNIGHT_X_POS, Constants.RED_Y_POS, PieceColor.RED);
+        initializeImageView(images.redBishop, Constants.LEFT_BISHOP_X_POS, Constants.RED_Y_POS, PieceColor.RED);
+        initializeImageView(images.redBishop, Constants.RIGHT_BISHOP_X_POS, Constants.RED_Y_POS, PieceColor.RED);
+        initializeImageView(images.redQueen, Constants.QUEEN_X_POS, Constants.RED_Y_POS, PieceColor.RED);
+        initializeImageView(images.redKing, Constants.KING_X_POS, Constants.RED_Y_POS, PieceColor.RED);
         for (int i = 0; i < 8; i++) {
-            initializeImageView(images.redPawn, -BOARD_SIZE / 2 + (2 * i + 1) * OFFSET / 2, Constants.RED_PAWN_Y_POS, ChessPieceColor.RED);
+            initializeImageView(images.redPawn, -BOARD_SIZE / 2 + (2 * i + 1) * OFFSET / 2, Constants.RED_PAWN_Y_POS, PieceColor.RED);
         }
 
-        initializeImageView(images.whiteRook, Constants.LEFT_ROOK_X_POS, Constants.WHITE_Y_POS, ChessPieceColor.WHITE);
-        initializeImageView(images.whiteRook, Constants.RIGHT_ROOK_X_POS, Constants.WHITE_Y_POS, ChessPieceColor.WHITE);
-        initializeImageView(images.whiteKnight, Constants.LEFT_KNIGHT_X_POS, Constants.WHITE_Y_POS, ChessPieceColor.WHITE);
-        initializeImageView(images.whiteKnight, Constants.RIGHT_KNIGHT_X_POS, Constants.WHITE_Y_POS, ChessPieceColor.WHITE);
-        initializeImageView(images.whiteBishop, Constants.LEFT_BISHOP_X_POS, Constants.WHITE_Y_POS, ChessPieceColor.WHITE);
-        initializeImageView(images.whiteBishop, Constants.RIGHT_BISHOP_X_POS, Constants.WHITE_Y_POS, ChessPieceColor.WHITE);
-        initializeImageView(images.whiteQueen, Constants.QUEEN_X_POS, Constants.WHITE_Y_POS, ChessPieceColor.WHITE);
-        initializeImageView(images.whiteKing, Constants.KING_X_POS, Constants.WHITE_Y_POS, ChessPieceColor.WHITE);
+        initializeImageView(images.whiteRook, Constants.LEFT_ROOK_X_POS, Constants.WHITE_Y_POS, PieceColor.WHITE);
+        initializeImageView(images.whiteRook, Constants.RIGHT_ROOK_X_POS, Constants.WHITE_Y_POS, PieceColor.WHITE);
+        initializeImageView(images.whiteKnight, Constants.LEFT_KNIGHT_X_POS, Constants.WHITE_Y_POS, PieceColor.WHITE);
+        initializeImageView(images.whiteKnight, Constants.RIGHT_KNIGHT_X_POS, Constants.WHITE_Y_POS, PieceColor.WHITE);
+        initializeImageView(images.whiteBishop, Constants.LEFT_BISHOP_X_POS, Constants.WHITE_Y_POS, PieceColor.WHITE);
+        initializeImageView(images.whiteBishop, Constants.RIGHT_BISHOP_X_POS, Constants.WHITE_Y_POS, PieceColor.WHITE);
+        initializeImageView(images.whiteQueen, Constants.QUEEN_X_POS, Constants.WHITE_Y_POS, PieceColor.WHITE);
+        initializeImageView(images.whiteKing, Constants.KING_X_POS, Constants.WHITE_Y_POS, PieceColor.WHITE);
         for (int i = 0; i < 8; i++) {
-            initializeImageView(images.whitePawn, -BOARD_SIZE / 2 + (2 * i + 1) * OFFSET / 2, Constants.WHITE_PAWN_Y_POS, ChessPieceColor.WHITE);
+            initializeImageView(images.whitePawn, -BOARD_SIZE / 2 + (2 * i + 1) * OFFSET / 2, Constants.WHITE_PAWN_Y_POS, PieceColor.WHITE);
         }
 
         board.getChildren().add(gameCanvas);
@@ -281,7 +280,7 @@ public class ChessBoard extends Application {
      * @param xPos      The x-position of the chess piece
      * @param yPos      The y-position of the chess piece
      */
-    private void initializeImageView(Image currImage, double xPos, double yPos, ChessPieceColor color) {
+    private void initializeImageView(Image currImage, double xPos, double yPos, PieceColor color) {
         ImageView imageView = new ImageView(currImage);
         imageView.setTranslateX(xPos);
         imageView.setTranslateY(yPos);
@@ -394,7 +393,7 @@ public class ChessBoard extends Application {
      * Pretty simple function to increment scores
      */
     private void winGame() {
-        if (game.currentTurn() == ChessPieceColor.RED) {
+        if (game.currentTurn() == PieceColor.RED) {
             playerTwoVal++;
         } else {
             playerOneVal++;

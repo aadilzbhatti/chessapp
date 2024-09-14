@@ -1,7 +1,7 @@
 package com.chessapp.api.game;
 
+import com.chessapp.api.board.BoardPosition;
 import com.chessapp.api.pieces.piece.Pawn;
-import com.chessapp.api.pieces.utils.ChessPieceColor;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -19,7 +19,7 @@ public class ChessPlayerTest {
      */
     @Test
     public void shouldBeAbleToInitialize() {
-        ChessPlayer p = new ChessPlayer(ChessPieceColor.RED, position);
+        ChessPlayer p = new ChessPlayer(PieceColor.RED, position);
         assertNotNull(p);
     }
 
@@ -29,7 +29,7 @@ public class ChessPlayerTest {
      */
     @Test
     public void shouldHaveAllPiecesAndList() {
-        ChessPlayer p = new ChessPlayer(ChessPieceColor.RED, position);
+        ChessPlayer p = new ChessPlayer(PieceColor.RED, position);
         assertNotNull(p.king);
         assertNotNull(p.queen);
         assertNotNull(p.leftBishop);
@@ -50,13 +50,13 @@ public class ChessPlayerTest {
      * @throws Exception
      */
     @Test
-    public void beAbleToAttackOtherPlayers() throws Exception {
-        ChessPlayer p1 = new ChessPlayer(ChessPieceColor.RED, position);
-        ChessPlayer p2 = new ChessPlayer(ChessPieceColor.WHITE, position);
+    public void beAbleToCaptureOtherPlayers() throws Exception {
+        ChessPlayer p1 = new ChessPlayer(PieceColor.RED, position);
+        ChessPlayer p2 = new ChessPlayer(PieceColor.WHITE, position);
         p1.leftKnight.move(2, 2, position);
         p2.rightKnight.move(5, 5, position);
         p1.leftKnight.move(4, 3, position);
-        p2.attack(p1.leftKnight, 4, 3, position, p1);
+        p2.capture(p1.leftKnight, 4, 3, position, p1);
         assertTrue(p2.takenPieces.contains(p1.leftKnight));
         assertFalse(p1.pieces.contains(p1.leftKnight));
     }

@@ -1,7 +1,7 @@
 package com.chessapp.api.game;
 
+import com.chessapp.api.board.BoardPosition;
 import com.chessapp.api.pieces.piece.ChessPiece;
-import com.chessapp.api.pieces.utils.ChessPieceColor;
 
 import java.util.Scanner;
 
@@ -27,9 +27,9 @@ public class ChessGame {
      * color RED and WHITE
      */
     public ChessGame(int boardSize) {
-        position = new BoardPosition(boardSize);
-        redPlayer = new ChessPlayer(ChessPieceColor.RED, position);
-        whitePlayer = new ChessPlayer(ChessPieceColor.WHITE, position);
+        position = new BoardPosition();
+        redPlayer = new ChessPlayer(PieceColor.RED, position);
+        whitePlayer = new ChessPlayer(PieceColor.WHITE, position);
     }
 
     /**

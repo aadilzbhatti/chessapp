@@ -1,6 +1,5 @@
 package com.chessapp.gui;
 
-import com.chessapp.api.pieces.utils.ChessPieceColor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,13 +20,13 @@ public class UtilityTests {
     @Test
     public void canInitializeTheLinker() {
         assertNotNull(game);
-        assertEquals(ChessPieceColor.WHITE, game.currentTurn());
+        assertEquals(PieceColor.WHITE, game.currentTurn());
     }
 
     @Test
     public void canChangeTurn() {
-        assertEquals(ChessPieceColor.WHITE, game.currentTurn());
+        assertEquals(PieceColor.WHITE, game.currentTurn());
         game.changeTurn();
-        assertEquals(ChessPieceColor.RED, game.currentTurn());
+        assertEquals(PieceColor.RED, game.currentTurn());
     }
 }

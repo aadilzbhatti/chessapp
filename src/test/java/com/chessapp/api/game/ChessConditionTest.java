@@ -1,12 +1,12 @@
 package com.chessapp.api.game;
 
+import com.chessapp.api.board.BoardPosition;
 import com.chessapp.api.pieces.piece.Bishop;
 import com.chessapp.api.pieces.piece.King;
 import com.chessapp.api.pieces.piece.Knight;
 import com.chessapp.api.pieces.piece.Pawn;
 import com.chessapp.api.pieces.piece.Queen;
 import com.chessapp.api.pieces.piece.Rook;
-import com.chessapp.api.pieces.utils.ChessPieceColor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,8 +24,8 @@ public class ChessConditionTest {
     @BeforeEach
     public void setUp() {
         position = new BoardPosition();
-        p1 = new ChessPlayer(ChessPieceColor.WHITE, position);
-        p2 = new ChessPlayer(ChessPieceColor.RED, position);
+        p1 = new ChessPlayer(PieceColor.WHITE, position);
+        p2 = new ChessPlayer(PieceColor.RED, position);
     }
 
     /**

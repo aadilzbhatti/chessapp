@@ -1,7 +1,7 @@
 package com.chessapp.api.game;
 
+import com.chessapp.api.board.BoardPosition;
 import com.chessapp.api.pieces.piece.Pawn;
-import com.chessapp.api.pieces.utils.ChessPieceColor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,8 +36,8 @@ public class BoardPositionTest {
      */
     @Test
     public void shouldBeAbleToInitializeWithPieces() {
-        ChessPlayer p1 = new ChessPlayer(ChessPieceColor.WHITE, position);
-        ChessPlayer p2 = new ChessPlayer(ChessPieceColor.RED, position);
+        ChessPlayer p1 = new ChessPlayer(PieceColor.WHITE, position);
+        ChessPlayer p2 = new ChessPlayer(PieceColor.RED, position);
         for (int i = 0; i < position.getSize(); i++) {
             assertNotNull(position.getPieceAtPosition(i, 0)); // Regular pieces
             assertNotNull(position.getPieceAtPosition(i, 1)); // Pawns
@@ -52,7 +52,7 @@ public class BoardPositionTest {
      */
     @Test
     public void shouldChangeWhenPieceMoves() throws Exception {
-        ChessPlayer p1 = new ChessPlayer(ChessPieceColor.RED, position);
+        ChessPlayer p1 = new ChessPlayer(PieceColor.RED, position);
         Pawn p = p1.pawns[0];
         assertSame(p, position.getPieceAtPosition(0, 1));
         p.move(0, 3, position);
@@ -65,7 +65,7 @@ public class BoardPositionTest {
      */
     @Test
     public void shouldBeAbleToCreateBoardPositionOfNSize() {
-        BoardPosition newBoard = new BoardPosition(12);
+        BoardPosition newBoard = new BoardPosition();
         assertEquals(newBoard.getSize(), 12);
     }
 
@@ -75,7 +75,7 @@ public class BoardPositionTest {
     @Test
     public void shouldNotBeAbleToCreateSmaller() {
         assertThrows(AssertionError.class, () -> {
-            BoardPosition newBoard = new BoardPosition(5);
+            BoardPosition newBoard = new BoardPosition();
             assertNull(newBoard);
         });
     }

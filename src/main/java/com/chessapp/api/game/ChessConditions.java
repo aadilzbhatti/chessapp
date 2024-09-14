@@ -1,7 +1,7 @@
 package com.chessapp.api.game;
 
+import com.chessapp.api.board.BoardPosition;
 import com.chessapp.api.pieces.piece.ChessPiece;
-import com.chessapp.api.pieces.utils.ChessPieceName;
 
 /**
  * Will later be used to check the game conditions
@@ -41,19 +41,19 @@ public class ChessConditions {
      * @return Whether or not the piece can check the King in the next move
      */
     private static boolean isKingInLineOfPiece(ChessPlayer player, ChessPiece piece, BoardPosition position) {
-        if (piece.getName() == ChessPieceName.BISHOP) {
+        if (piece.getName() == PieceName.BISHOP) {
             return Utils.canBishopCheckKing(piece, position, player);
 
-        } else if (piece.getName() == ChessPieceName.KNIGHT) {
+        } else if (piece.getName() == PieceName.KNIGHT) {
             return Utils.canKnightCheckKing(piece, position, player);
 
-        } else if (piece.getName() == ChessPieceName.ROOK) {
+        } else if (piece.getName() == PieceName.ROOK) {
             return Utils.canRookCheckKing(piece, position, player);
 
-        } else if (piece.getName() == ChessPieceName.KING) {
+        } else if (piece.getName() == PieceName.KING) {
             return Utils.canKingCheckKing(piece, position, player);
 
-        } else if (piece.getName() == ChessPieceName.PAWN) {
+        } else if (piece.getName() == PieceName.PAWN) {
             return Utils.canPawnCheckKing(piece, position, player);
 
         } else {
