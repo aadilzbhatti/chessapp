@@ -8,11 +8,11 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-class RookTest {
+class QueenTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideTestCases")
     fun testStartingPositions(name: String, color: PieceColor, rank: Rank, file: Int, shouldThrowInvalidPosition: Boolean) {
-        val result = runCatching { Rook(color, rank, file) }
+        val result = runCatching { Queen(color, rank, file) }
         if (shouldThrowInvalidPosition) {
             assertThrows<InvalidPositionException> { result.getOrThrow() }
         } else {
@@ -23,12 +23,13 @@ class RookTest {
     companion object {
         @JvmStatic
         fun provideTestCases(): Stream<Arguments> {
-            return PieceColor.entries.flatMap { color ->
-                when (color) {
-                    PieceColor.WHITE -> PieceTestUtils.generateTestCases(color, setOf(Rank.A, Rank.H), validFile = 1)
-                    PieceColor.BLACK -> PieceTestUtils.generateTestCases(color, setOf(Rank.A, Rank.H), validFile = 8)
+            val testCases = PieceColor.entries.flatMap { color ->
+                when(color) {
+                    PieceColor.WHITE -> PieceTestUtils.generateTestCases(color, setOf(Rank.D), validFile = 1)
+                    PieceColor.BLACK -> PieceTestUtils.generateTestCases(color, setOf(Rank.D), validFile = 8)
                 }
-            }.stream()
+            }
+            return testCases.stream()
         }
     }
 }
