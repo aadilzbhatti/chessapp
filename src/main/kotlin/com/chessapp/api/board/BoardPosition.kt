@@ -14,13 +14,13 @@ object BoardPosition {
     private val positions: Array<Array<ChessPiece?>> = Array(BOARD_SIZE) { arrayOfNulls(BOARD_SIZE) }
 
     fun getPieceAtPosition(rank: Rank, file: Int): ChessPiece? {
-        val (xPos, yPos) = getBoardCoordinates(rank, file)
-        return positions[xPos][yPos]
+        val (x, y) = PositionUtils.getCoordinatesFromRankFile(rank, file)
+        return positions[x][y]
     }
 
-    private fun isPositionOccupied(rank: Rank, file: Int): Boolean {
-        val (xPos, yPos) = getBoardCoordinates(rank, file)
-        return positions[xPos][yPos] != null
+    fun isPositionOccupiedByPiece(rank: Rank, file: Int): Boolean {
+        val (x, y) = PositionUtils.getCoordinatesFromRankFile(rank, file)
+        return positions[x][y] != null
     }
 
     fun occupyPosition(piece: ChessPiece) {
@@ -29,50 +29,36 @@ object BoardPosition {
         occupyPosition(rank, file, piece)
     }
 
-    fun occupyPosition(rank: Rank, file: Int, piece: ChessPiece) {
-        if (isPositionOccupied(rank, file)) {
-            throw InvalidPositionException("Square $rank$file is occupied by another piece")
+    private fun occupyPosition(rank: Rank, file: Int, piece: ChessPiece) {
+        if (isPositionOccupiedByPiece(rank, file)) {
+            throw InvalidPositionException("Square $rank$file is already occupied by another piece")
         }
 
-        val (xPos, yPos) = getBoardCoordinates(rank, file)
-        positions[xPos][yPos] = piece
+        val (x, y) = PositionUtils.getCoordinatesFromRankFile(rank, file)
+        positions[x][y] = piece
     }
 
-    fun removePiece(rank: Rank, file: Int): ChessPiece? {
-        val (xPos, yPos) = getBoardCoordinates(rank, file)
-        return positions[xPos][yPos].also { positions[xPos][yPos] = null }
+    fun removePiece(piece: ChessPiece): ChessPiece? = removePiece(piece.rank(), piece.file())
+
+    private fun removePiece(rank: Rank, file: Int): ChessPiece? {
+        val (x, y) = PositionUtils.getCoordinatesFromRankFile(rank, file)
+        return positions[x][y].also { positions[x][y] = null }
     }
 
-    private fun getBoardCoordinates(rank: Rank, file: Int): Pair<Int, Int> {
-        validateFile(file)
-        val xPos = when (rank) {
-            Rank.A -> 0
-            Rank.B -> 1
-            Rank.C -> 2
-            Rank.D -> 3
-            Rank.E -> 4
-            Rank.F -> 5
-            Rank.G -> 6
-            Rank.H -> 7
+    override fun toString(): String {
+        val size = positions.size
+        val rotatedArray = Array(size) { Array<ChessPiece?>(size) { null } }
+
+        for (i in 0 until size) {
+            for (j in 0 until size) {
+                rotatedArray[size - j - 1][i] = positions[i][j]
+            }
         }
-        val yPos = file - 1
-        return Pair(xPos, yPos)
-    }
 
-    private fun validateFile(file: Int) {
-        if (file < 1 || file > 8) {
-            throw InvalidPositionException("Invalid file with value $file: must be between 1 and 8")
+        return rotatedArray.joinToString(" |\n") { row ->
+            row.joinToString(" -- ") { piece ->
+                piece?.toString() ?: "."
+            }
         }
     }
-}
-
-enum class Rank {
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    H
 }

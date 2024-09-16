@@ -14,4 +14,6 @@ class Knight(color: PieceColor, rank: Rank, file: Int) : ChessPiece(PieceName.KN
             throw InvalidPositionException("Knights must start on ranks B or G, got: ${this.rank}")
         }
     }
+
+    override fun toString() = "N"
 }

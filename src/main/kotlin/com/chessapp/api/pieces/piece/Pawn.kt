@@ -9,4 +9,6 @@ class Pawn(color: PieceColor, rank: Rank, file: Int): ChessPiece(PieceName.PAWN,
     override fun validateStartingPosition() {
         PieceUtils.validatePawnStartingOnCorrectFile(this)
     }
+
+    override fun toString() = "p"
 }

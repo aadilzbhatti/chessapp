@@ -13,4 +13,6 @@ class Rook(color: PieceColor, rank: Rank, file: Int) : ChessPiece(PieceName.ROOK
             throw InvalidPositionException("Rooks must start on rank A or H, got: ${this.rank}")
         }
     }
+
+    override fun toString() = "R"
 }

@@ -5,9 +5,9 @@ import com.chessapp.api.pieces.piece.Bishop
 import com.chessapp.api.pieces.piece.King
 import com.chessapp.api.pieces.piece.Knight
 import com.chessapp.api.pieces.piece.Pawn
-import com.chessapp.api.pieces.piece.Rook
 import com.chessapp.api.pieces.piece.PieceColor
 import com.chessapp.api.pieces.piece.Queen
+import com.chessapp.api.pieces.piece.Rook
 
 object BoardManager {
     // White pieces
@@ -19,7 +19,18 @@ object BoardManager {
     private val whiteKingsideBishop = Bishop(PieceColor.WHITE, Rank.F, 1)
     private val whiteKingsideKnight = Knight(PieceColor.WHITE, Rank.G, 1)
     private val whiteKingsideRook = Rook(PieceColor.WHITE, Rank.H, 1)
-    private val whitePawns: Array<Pawn> = emptyArray()
+    private val whitePawns: List<Pawn> = Rank.entries.map { Pawn(PieceColor.WHITE, it, 2) }
+
+    private val whitePieces = listOf(
+        whiteQueensideRook,
+        whiteQueensideKnight,
+        whiteQueensideBishop,
+        whiteQueen,
+        whiteKing,
+        whiteKingsideBishop,
+        whiteKingsideKnight,
+        whiteKingsideRook
+    ) + whitePawns
 
     // Black pieces
     private val blackQueensideRook = Rook(PieceColor.BLACK, Rank.A, 8)
@@ -30,15 +41,26 @@ object BoardManager {
     private val blackKingsideBishop = Bishop(PieceColor.BLACK, Rank.F, 8)
     private val blackKingsideKnight = Knight(PieceColor.BLACK, Rank.G, 8)
     private val blackKingsideRook = Rook(PieceColor.BLACK, Rank.H, 8)
-    private val blackPawns: Array<Pawn> = emptyArray()
+    private val blackPawns = Rank.entries.map { Pawn(PieceColor.BLACK, it, 7) }
 
+    private val blackPieces = arrayOf(
+        blackQueensideRook,
+        blackQueensideKnight,
+        blackQueensideBishop,
+        blackQueen,
+        blackKing,
+        blackKingsideBishop,
+        blackKingsideKnight,
+        blackKingsideRook
+    ) + blackPawns
+
+    private val allPieces = whitePieces + blackPieces
 
     init {
-        Rank.entries.forEachIndexed { index, rank ->
-            whitePawns[index] = Pawn(PieceColor.WHITE, rank, 2)
-            blackPawns[index] = Pawn(PieceColor.BLACK, rank, 7)
-        }
+      initialize()
+    }
 
+    fun initialize() {
         occupyPosition(whiteQueensideRook)
         occupyPosition(whiteQueensideKnight)
         occupyPosition(whiteQueensideBishop)
@@ -48,7 +70,6 @@ object BoardManager {
         occupyPosition(whiteKingsideKnight)
         occupyPosition(whiteKingsideRook)
         whitePawns.forEach { occupyPosition(it) }
-
 
         occupyPosition(blackQueensideRook)
         occupyPosition(blackQueensideKnight)
@@ -60,4 +81,6 @@ object BoardManager {
         occupyPosition(blackKingsideRook)
         blackPawns.forEach { occupyPosition(it) }
     }
+
+    fun allPieces() = allPieces
 }

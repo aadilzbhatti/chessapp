@@ -13,5 +13,7 @@ class Queen(color: PieceColor, rank: Rank, file: Int) : ChessPiece(PieceName.QUE
             throw InvalidPositionException("Queens must start on rank D, got: ${this.rank}")
         }
     }
+
+    override fun toString() = "Q"
 }
 

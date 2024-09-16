@@ -17,6 +17,7 @@ abstract class ChessPiece(
     protected var file: Int
 ) {
 
+    fun name() = name
     fun color() = color
     fun rank() = rank
     fun file() = file
@@ -52,6 +53,24 @@ abstract class ChessPiece(
 
     @Throws(InvalidPositionException::class)
     abstract fun validateStartingPosition()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ChessPiece) return false
+
+        return this.name == other.name
+                && this.color == other.color
+                && this.rank == other.rank
+                && this.file == other.file
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + color.hashCode()
+        result = 31 * result + rank.hashCode()
+        result = 31 * result + file
+        return result
+    }
 }
 
 

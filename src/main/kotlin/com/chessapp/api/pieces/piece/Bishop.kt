@@ -13,4 +13,6 @@ class Bishop(color: PieceColor, rank: Rank, file: Int) : ChessPiece(PieceName.BI
             throw InvalidPositionException("Bishops must start on ranks C or F, got: ${this.rank}")
         }
     }
+
+    override fun toString() = "B"
 }
