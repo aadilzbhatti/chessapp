@@ -1,6 +1,6 @@
 package com.chessapp.api.pieces.piece
 
-import com.chessapp.api.board.Rank
+import com.chessapp.api.board.File
 import com.chessapp.api.pieces.utils.InvalidPositionException
 import java.util.Locale
 
@@ -13,14 +13,14 @@ import java.util.Locale
 abstract class ChessPiece(
     private val name: PieceName,
     protected val color: PieceColor,
-    protected var rank: Rank,
-    protected var file: Int
+    protected var file: File,
+    protected var rank: Int
 ) {
 
     fun name() = name
     fun color() = color
-    fun rank() = rank
     fun file() = file
+    fun rank() = rank
 
     init {
         safeValidateStartingPosition()
@@ -42,16 +42,15 @@ abstract class ChessPiece(
         } }
     }
 
-    fun setPos(rank: Rank, file: Int) {
-        this.rank = rank
+    fun setPos(file: File, rank: Int) {
         this.file = file
+        this.rank = rank
     }
 
     private fun safeValidateStartingPosition() {
         validateStartingPosition()
     }
 
-    @Throws(InvalidPositionException::class)
     abstract fun validateStartingPosition()
 
     override fun equals(other: Any?): Boolean {
@@ -61,14 +60,14 @@ abstract class ChessPiece(
         return this.name == other.name
                 && this.color == other.color
                 && this.rank == other.rank
-                && this.file == other.file
+                && this.rank == other.rank
     }
 
     override fun hashCode(): Int {
         var result = name.hashCode()
         result = 31 * result + color.hashCode()
         result = 31 * result + rank.hashCode()
-        result = 31 * result + file
+        result = 31 * result + rank
         return result
     }
 }

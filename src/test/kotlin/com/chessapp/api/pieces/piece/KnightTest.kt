@@ -1,6 +1,6 @@
 package com.chessapp.api.pieces.piece
 
-import com.chessapp.api.board.Rank
+import com.chessapp.api.board.File
 import com.chessapp.api.pieces.utils.InvalidPositionException
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -11,7 +11,7 @@ import java.util.stream.Stream
 class KnightTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideTestCases")
-    fun testStartingPositions(name: String, color: PieceColor, rank: Rank, file: Int, shouldThrowInvalidPosition: Boolean) {
+    fun testStartingPositions(name: String, color: PieceColor, rank: File, file: Int, shouldThrowInvalidPosition: Boolean) {
         val result = runCatching { Knight(color, rank, file) }
         if (shouldThrowInvalidPosition) {
             assertThrows<InvalidPositionException> { result.getOrThrow() }
@@ -25,8 +25,8 @@ class KnightTest {
         fun provideTestCases(): Stream<Arguments> {
             return PieceColor.entries.flatMap { color ->
                 when (color) {
-                    PieceColor.WHITE -> PieceTestUtils.generateTestCases(color, setOf(Rank.B, Rank.G), validFile = 1)
-                    PieceColor.BLACK -> PieceTestUtils.generateTestCases(color, setOf(Rank.B, Rank.G), validFile = 8)
+                    PieceColor.WHITE -> PieceTestUtils.generateTestCases(color, setOf(File.B, File.G), validFile = 1)
+                    PieceColor.BLACK -> PieceTestUtils.generateTestCases(color, setOf(File.B, File.G), validFile = 8)
                 }
             }.stream()
         }

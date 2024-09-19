@@ -1,16 +1,16 @@
 package com.chessapp.api.pieces.piece
 
-import com.chessapp.api.board.Rank
+import com.chessapp.api.board.File
 import com.chessapp.api.pieces.utils.InvalidPositionException
 
 /**
  * The template for creating Rook pieces
  */
-class Rook(color: PieceColor, rank: Rank, file: Int) : ChessPiece(PieceName.ROOK, color, rank, file) {
+class Rook(color: PieceColor, file: File, rank: Int) : ChessPiece(PieceName.ROOK, color, file, rank) {
     override fun validateStartingPosition() {
         PieceUtils.validatePieceStartingOnCorrectFile(this)
-        if (this.rank != Rank.A && this.rank != Rank.H) {
-            throw InvalidPositionException("Rooks must start on rank A or H, got: ${this.rank}")
+        if (this.file != File.A && this.file != File.H) {
+            throw InvalidPositionException("Rooks must start on rank A or H, got: ${this.file}")
         }
     }
 

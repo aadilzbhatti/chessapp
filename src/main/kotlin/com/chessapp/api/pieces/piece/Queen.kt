@@ -1,16 +1,16 @@
 package com.chessapp.api.pieces.piece
 
-import com.chessapp.api.board.Rank
+import com.chessapp.api.board.File
 import com.chessapp.api.pieces.utils.InvalidPositionException
 
 /**
  * The template for creating Queen pieces
  */
-class Queen(color: PieceColor, rank: Rank, file: Int) : ChessPiece(PieceName.QUEEN, color, rank, file) {
+class Queen(color: PieceColor, file: File, rank: Int) : ChessPiece(PieceName.QUEEN, color, file, rank) {
     override fun validateStartingPosition() {
         PieceUtils.validatePieceStartingOnCorrectFile(this)
-        if (this.rank != Rank.D) {
-            throw InvalidPositionException("Queens must start on rank D, got: ${this.rank}")
+        if (this.file != File.D) {
+            throw InvalidPositionException("Queens must start on rank D, got: ${this.file}")
         }
     }
 

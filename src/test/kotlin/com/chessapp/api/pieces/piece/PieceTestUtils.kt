@@ -1,13 +1,13 @@
 package com.chessapp.api.pieces.piece
 
-import com.chessapp.api.board.Rank
+import com.chessapp.api.board.File
 import org.junit.jupiter.params.provider.Arguments
 
 object PieceTestUtils {
-    fun generateTestCases(color: PieceColor, validRanks: Set<Rank>, validFile: Int): List<Arguments> {
-        return Rank.entries.flatMap { rank ->
+    fun generateTestCases(color: PieceColor, validFiles: Set<File>, validFile: Int): List<Arguments> {
+        return File.entries.flatMap { rank ->
             (1..8).map { file ->
-                val correctRank = validRanks.contains(rank)
+                val correctRank = validFiles.contains(rank)
                 val correctFile = file == validFile
                 val description = when {
                     correctRank && correctFile -> "$color: Correct rank($rank) and file($file)"
