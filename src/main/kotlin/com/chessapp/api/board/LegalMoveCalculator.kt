@@ -3,7 +3,9 @@ package com.chessapp.api.board
 import com.chessapp.BOARD_SIZE
 import com.chessapp.api.pieces.piece.Bishop
 import com.chessapp.api.pieces.piece.ChessPiece
+import com.chessapp.api.pieces.piece.King
 import com.chessapp.api.pieces.piece.Knight
+import com.chessapp.api.pieces.piece.Pawn
 import com.chessapp.api.pieces.piece.PieceName
 import com.chessapp.api.pieces.piece.Queen
 import com.chessapp.api.pieces.piece.Rook
@@ -17,7 +19,7 @@ class LegalMoveCalculator(private val boardPosition: BoardPosition) {
             PieceName.KNIGHT -> (piece as? Knight)?.let { computeLegalMovesForKnight(it) }
             PieceName.BISHOP ->  (piece as? Bishop)?.let { computeDiagonalMoves(it) }
             PieceName.QUEEN -> (piece as? Queen)?.let { computeMovesForQueen(it) }
-            PieceName.KING -> TODO()
+            PieceName.KING -> (piece as? King)?.let { computeMovesForKing(it) }
             PieceName.PAWN -> TODO()
         }
     }
@@ -89,7 +91,25 @@ class LegalMoveCalculator(private val boardPosition: BoardPosition) {
     }
 
     private fun computeMovesForQueen(queen: Queen): Set<Pair<File, Int>> =
-        computeDiagonalMoves(queen) intersect computeLateralMoves(queen)
+        computeDiagonalMoves(queen) union computeLateralMoves(queen)
+
+    // TODO need to introduce more conditions here
+    private fun computeMovesForKing(king: King): Set<Pair<File, Int>> {
+        val (x, y) = PositionUtils.getCoordinatesFromFileRank(king.file(), king.rank())
+
+        val possibleMoves = listOf(
+            x + 1 to y,
+            x + 1 to y + 1,
+            x + 1 to y - 1,
+            x - 1 to y,
+            x - 1 to y + 1,
+            x - 1 to y - 1,
+            x to y + 1,
+            x to y - 1,
+        )
+
+        return getLegalMovesFromPossibleMoves(king, possibleMoves)
+    }
 
     private fun getLegalMovesFromPossibleMoves(piece: ChessPiece, possibleMoves: List<Pair<Int, Int>>): Set<Pair<File, Int>> {
         return possibleMoves.filter(PositionUtils::isValidCoordinates)

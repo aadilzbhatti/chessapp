@@ -1,27 +1,9 @@
 package com.chessapp.api.board
 
-import com.chessapp.api.pieces.piece.Bishop
 import com.chessapp.api.pieces.piece.ChessPiece
-import com.chessapp.api.pieces.piece.DefaultPieces.BLACK_KINGSIDE_BISHOP
-import com.chessapp.api.pieces.piece.DefaultPieces.BLACK_KINGSIDE_KNIGHT
-import com.chessapp.api.pieces.piece.DefaultPieces.BLACK_KINGSIDE_ROOK
-import com.chessapp.api.pieces.piece.DefaultPieces.BLACK_QUEEN
-import com.chessapp.api.pieces.piece.DefaultPieces.BLACK_QUEENSIDE_BISHOP
-import com.chessapp.api.pieces.piece.DefaultPieces.BLACK_QUEENSIDE_KNIGHT
-import com.chessapp.api.pieces.piece.DefaultPieces.BLACK_QUEENSIDE_ROOK
-import com.chessapp.api.pieces.piece.DefaultPieces.WHITE_KINGSIDE_BISHOP
-import com.chessapp.api.pieces.piece.DefaultPieces.WHITE_KINGSIDE_KNIGHT
-import com.chessapp.api.pieces.piece.DefaultPieces.WHITE_KINGSIDE_ROOK
-import com.chessapp.api.pieces.piece.DefaultPieces.WHITE_PAWNS
-import com.chessapp.api.pieces.piece.DefaultPieces.WHITE_QUEEN
-import com.chessapp.api.pieces.piece.DefaultPieces.WHITE_QUEENSIDE_BISHOP
-import com.chessapp.api.pieces.piece.DefaultPieces.WHITE_QUEENSIDE_KNIGHT
-import com.chessapp.api.pieces.piece.DefaultPieces.WHITE_QUEENSIDE_ROOK
-import com.chessapp.api.pieces.piece.Knight
+import com.chessapp.api.pieces.piece.DefaultPieces
 import com.chessapp.api.pieces.piece.Pawn
 import com.chessapp.api.pieces.piece.PieceColor
-import com.chessapp.api.pieces.piece.Queen
-import com.chessapp.api.pieces.piece.Rook
 import com.chessapp.api.pieces.utils.InvalidPositionException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -46,7 +28,7 @@ class LegalMoveCalculatorTest {
         val boardPosition = BoardPosition() // empty board position
         val legalMoveCalculator = LegalMoveCalculator(boardPosition)
 
-        val rook = WHITE_QUEENSIDE_ROOK
+        val rook = DefaultPieces.whiteQueensideRook()
         boardPosition.occupyPosition(rook)
 
         getLegalMovesAndAssertEqualsExpectedMoveSet(legalMoveCalculator, rook, setOf(
@@ -86,10 +68,10 @@ class LegalMoveCalculatorTest {
         ))
 
         // add other pieces around the rook so that it is blocked
-        val knight = WHITE_QUEENSIDE_KNIGHT
-        val pawn = WHITE_PAWNS[1]
-        val bishop = WHITE_QUEENSIDE_BISHOP
-        val queen = WHITE_QUEEN
+        val knight = DefaultPieces.whiteKingsideKnight()
+        val pawn = DefaultPieces.whitePawns()[1]
+        val bishop = DefaultPieces.whiteQueensideBishop()
+        val queen = DefaultPieces.whiteQueen()
 
         boardPosition.occupyPosition(knight)
         boardPosition.occupyPosition(pawn)
@@ -119,7 +101,7 @@ class LegalMoveCalculatorTest {
         val boardPosition = BoardPosition() // empty board position
         val legalMoveCalculator = LegalMoveCalculator(boardPosition)
 
-        val knight = WHITE_QUEENSIDE_KNIGHT
+        val knight = DefaultPieces.whiteQueensideKnight()
         boardPosition.occupyPosition(knight)
         getLegalMovesAndAssertEqualsExpectedMoveSet(legalMoveCalculator, knight, setOf(File.A to 3, File.C to 3, File.D to 2))
 
@@ -170,7 +152,101 @@ class LegalMoveCalculatorTest {
 
     @Test
     fun testLegalMovesQueenInCenter() {
+        val boardPosition = BoardPosition()
+        val legalMoveCalculator = LegalMoveCalculator(boardPosition)
 
+        val queen = DefaultPieces.whiteQueen()
+        boardPosition.occupyPosition(queen)
+
+        // test the queen in the center with no blocking pieces
+        boardPosition.movePiece(queen, File.E, 5)
+        val queenMoves = listOf(
+            File.A to 1,
+            File.A to 5,
+            File.B to 2,
+            File.B to 5,
+            File.B to 8,
+            File.C to 3,
+            File.C to 5,
+            File.C to 7,
+            File.D to 4,
+            File.D to 5,
+            File.D to 6,
+            File.E to 1,
+            File.E to 2,
+            File.E to 3,
+            File.E to 4,
+            File.E to 6,
+            File.E to 7,
+            File.E to 8,
+            File.F to 4,
+            File.F to 5,
+            File.F to 6,
+            File.G to 3,
+            File.G to 5,
+            File.G to 7,
+            File.H to 2,
+            File.H to 5,
+            File.H to 8
+        )
+        getLegalMovesAndAssertEqualsExpectedMoveSet(legalMoveCalculator, queen, queenMoves.toSet())
+
+        // test the queen in the center with a few blocking pieces
+        val rook = DefaultPieces.whiteQueensideRook().also { boardPosition.occupyPosition(it) }
+        val pawn = DefaultPieces.whitePawns()[0].also { boardPosition.occupyPosition(it) }
+        val bishop = DefaultPieces.whiteQueensideBishop().also { boardPosition.occupyPosition(it) }
+        val king = DefaultPieces.whiteKing().also { boardPosition.occupyPosition(it) }
+        val knight = DefaultPieces.whiteQueensideKnight().also { boardPosition.occupyPosition(it) }
+
+        boardPosition.movePiece(rook, File.E, 7)
+        boardPosition.movePiece(pawn, File.C, 7)
+        boardPosition.movePiece(bishop, File.F, 5)
+        boardPosition.movePiece(king, File.D, 4)
+        boardPosition.movePiece(knight, File.E, 1)
+
+        val occupiedSquares = setOf(File.E to 7, File.C to 7, File.F to 5, File.D to 4, File.E to 1)
+        val blockedSquares = setOf(File.A to 1, File.B to 2, File.C to 3, File.B to 8, File.E to 8, File.G to 5, File.H to 5)
+        val whiteBlockingQueenMoves = queenMoves.subtract(occupiedSquares union blockedSquares)
+        getLegalMovesAndAssertEqualsExpectedMoveSet(legalMoveCalculator, queen, whiteBlockingQueenMoves.toSet())
+    }
+
+    @Test
+    fun testLegalMovesKingInCenter() {
+        val boardPosition = BoardPosition()
+        val legalMoveCalculator = LegalMoveCalculator(boardPosition)
+
+        val king = DefaultPieces.whiteKing().also { boardPosition.occupyPosition(it) }
+
+        // test king in the center with no blocking pieces
+        boardPosition.movePiece(king, File.E, 5)
+        val kingMoves = setOf(
+            File.D to 4,
+            File.D to 5,
+            File.D to 6,
+            File.E to 4,
+            File.E to 6,
+            File.F to 4,
+            File.F to 5,
+            File.F to 6,
+        )
+        getLegalMovesAndAssertEqualsExpectedMoveSet(legalMoveCalculator, king, kingMoves)
+
+        // test king in the center with a few blocking pieces
+        val rook = DefaultPieces.whiteQueensideRook().also { boardPosition.occupyPosition(it) }
+        val pawn = DefaultPieces.whitePawns()[0].also { boardPosition.occupyPosition(it) }
+        val knight = DefaultPieces.whiteQueensideKnight().also { boardPosition.occupyPosition(it) }
+        val queen = DefaultPieces.whiteQueen().also { boardPosition.occupyPosition(it) }
+
+        boardPosition.movePiece(rook, File.E, 6)
+        boardPosition.movePiece(pawn, File.F, 4)
+        boardPosition.movePiece(knight, File.F, 5)
+        boardPosition.movePiece(queen, File.D, 4)
+        getLegalMovesAndAssertEqualsExpectedMoveSet(legalMoveCalculator, king, kingMoves.subtract(setOf(
+            File.E to 6,
+            File.F to 4,
+            File.F to 5,
+            File.D to 4
+        )))
     }
 
     private fun getLegalMovesAndAssertEqualsExpectedMoveSet(
@@ -187,20 +263,22 @@ class LegalMoveCalculatorTest {
         @JvmStatic
         fun provideStartingPositionTestCases(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of("White queenside rook", WHITE_QUEENSIDE_ROOK, emptySet<Pair<File, Int>>()),
-                Arguments.of("White queenside knight", WHITE_QUEENSIDE_KNIGHT, setOf(File.A to 3, File.C to 3)),
-                Arguments.of("White queenside bishop", WHITE_QUEENSIDE_BISHOP, emptySet<Pair<File, Int>>()),
-                Arguments.of("White queen", WHITE_QUEEN, emptySet<Pair<File, Int>>()),
-                Arguments.of("White kingside bishop", WHITE_KINGSIDE_BISHOP, emptySet<Pair<File, Int>>()),
-                Arguments.of("White kingside knight", WHITE_KINGSIDE_KNIGHT, setOf(File.F to 3, File.H to 3)),
-                Arguments.of("White kingside rook", WHITE_KINGSIDE_ROOK, emptySet<Pair<File, Int>>()),
-                Arguments.of("Black queenside rook", BLACK_QUEENSIDE_ROOK, emptySet<Pair<File, Int>>()),
-                Arguments.of("Black queenside knight", BLACK_QUEENSIDE_KNIGHT, setOf(File.A to 6, File.C to 6)),
-                Arguments.of("Black queenside bishop", BLACK_QUEENSIDE_BISHOP, emptySet<Pair<File, Int>>()),
-                Arguments.of("Black queen", BLACK_QUEEN, emptySet<Pair<File, Int>>()),
-                Arguments.of("Black kingside bishop", BLACK_KINGSIDE_BISHOP, emptySet<Pair<File, Int>>()),
-                Arguments.of("Black kingside knight", BLACK_KINGSIDE_KNIGHT, setOf(File.F to 6, File.H to 6)),
-                Arguments.of("Black kingside rook", BLACK_KINGSIDE_ROOK, emptySet<Pair<File, Int>>()),
+                Arguments.of("White queenside rook", DefaultPieces.whiteQueensideRook(), emptySet<Pair<File, Int>>()),
+                Arguments.of("White queenside knight", DefaultPieces.whiteQueensideKnight(), setOf(File.A to 3, File.C to 3)),
+                Arguments.of("White queenside bishop", DefaultPieces.whiteQueensideBishop(), emptySet<Pair<File, Int>>()),
+                Arguments.of("White queen", DefaultPieces.whiteQueen(), emptySet<Pair<File, Int>>()),
+                Arguments.of("White king", DefaultPieces.whiteKing(), emptySet<Pair<File, Int>>()),
+                Arguments.of("White kingside bishop", DefaultPieces.whiteKingsideBishop(), emptySet<Pair<File, Int>>()),
+                Arguments.of("White kingside knight", DefaultPieces.whiteKingsideKnight(), setOf(File.F to 3, File.H to 3)),
+                Arguments.of("White kingside rook", DefaultPieces.whiteKingsideRook(), emptySet<Pair<File, Int>>()),
+                Arguments.of("Black queenside rook", DefaultPieces.blackQueensideRook(), emptySet<Pair<File, Int>>()),
+                Arguments.of("Black queenside knight", DefaultPieces.blackQueensideKnight(), setOf(File.A to 6, File.C to 6)),
+                Arguments.of("Black queenside bishop", DefaultPieces.blackQueensideBishop(), emptySet<Pair<File, Int>>()),
+                Arguments.of("Black queen", DefaultPieces.blackQueen(), emptySet<Pair<File, Int>>()),
+                Arguments.of("Black king", DefaultPieces.blackKing(), emptySet<Pair<File, Int>>()),
+                Arguments.of("Black kingside bishop", DefaultPieces.blackKingsideBishop(), emptySet<Pair<File, Int>>()),
+                Arguments.of("Black kingside knight", DefaultPieces.blackKingsideKnight(), setOf(File.F to 6, File.H to 6)),
+                Arguments.of("Black kingside rook", DefaultPieces.blackKingsideRook(), emptySet<Pair<File, Int>>()),
                 )
         }
 
