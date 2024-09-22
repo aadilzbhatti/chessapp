@@ -14,8 +14,8 @@ class BoardPosition {
     // The internal array used to keep track of the location of pieces
     private val positions: Array<Array<ChessPiece?>> = Array(BOARD_SIZE) { arrayOfNulls(BOARD_SIZE) }
 
-    fun getPieceAtPosition(rank: File, file: Int): ChessPiece? {
-        val (x, y) = PositionUtils.getCoordinatesFromFileRank(rank, file)
+    fun getPieceAtPosition(file: File, rank: Int): ChessPiece? {
+        val (x, y) = PositionUtils.getCoordinatesFromFileRank(file, rank)
         return positions[x][y]
     }
 

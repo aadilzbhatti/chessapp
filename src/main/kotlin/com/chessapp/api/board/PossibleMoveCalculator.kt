@@ -6,23 +6,26 @@ import com.chessapp.api.pieces.piece.ChessPiece
 import com.chessapp.api.pieces.piece.King
 import com.chessapp.api.pieces.piece.Knight
 import com.chessapp.api.pieces.piece.Pawn
+import com.chessapp.api.pieces.piece.PieceColor
 import com.chessapp.api.pieces.piece.PieceName
 import com.chessapp.api.pieces.piece.Queen
 import com.chessapp.api.pieces.piece.Rook
 
-class LegalMoveCalculator(private val boardPosition: BoardPosition) {
+/**
+ * PossibleMoveCalculator computes possible moves, i.e. the potential valid moves that each piece can make,
+ * without assumption of any game conditions such as pins or checks
+ */
+class PossibleMoveCalculator(private val boardPosition: BoardPosition) {
 
-    // TODO include more predicates for more complex conditions e.g. pins, checks, etc
-    fun getLegalMovesForPiece(piece: ChessPiece): Set<Pair<File, Int>>? {
-        return when (piece.name()) {
+    fun getPossibleMovesForPiece(piece: ChessPiece): Set<Pair<File, Int>>? =
+        when (piece.name()) {
             PieceName.ROOK -> (piece as? Rook)?.let { computeLateralMoves(it) }
-            PieceName.KNIGHT -> (piece as? Knight)?.let { computeLegalMovesForKnight(it) }
+            PieceName.KNIGHT -> (piece as? Knight)?.let { computeMovesForKnight(it) }
             PieceName.BISHOP ->  (piece as? Bishop)?.let { computeDiagonalMoves(it) }
             PieceName.QUEEN -> (piece as? Queen)?.let { computeMovesForQueen(it) }
             PieceName.KING -> (piece as? King)?.let { computeMovesForKing(it) }
-            PieceName.PAWN -> TODO()
+            PieceName.PAWN -> (piece as? Pawn)?.let { computeMovesForPawn(it) }
         }
-    }
 
     private fun computeLateralMoves(piece: ChessPiece): Set<Pair<File, Int>> {
         val (rank, file) = piece.run { rank() to file() }
@@ -33,17 +36,17 @@ class LegalMoveCalculator(private val boardPosition: BoardPosition) {
         val yForwardMoves = (y + 1 until BOARD_SIZE).map { newY -> x to newY }.toMutableList()
         val yBackwardMoves = (y - 1 downTo 0).map { newY -> x to newY }.toMutableList()
 
-        removeMovesAfterBlockingPieces(xForwardMoves)
-        removeMovesAfterBlockingPieces(xBackwardMoves)
-        removeMovesAfterBlockingPieces(yForwardMoves)
-        removeMovesAfterBlockingPieces(yBackwardMoves)
+        removeMovesAfterBlockingPieces(piece, xForwardMoves)
+        removeMovesAfterBlockingPieces(piece, xBackwardMoves)
+        removeMovesAfterBlockingPieces(piece, yForwardMoves)
+        removeMovesAfterBlockingPieces(piece, yBackwardMoves)
 
         val possibleLegalMoves = xForwardMoves + xBackwardMoves + yForwardMoves + yBackwardMoves
 
-        return getLegalMovesFromPossibleMoves(piece, possibleLegalMoves)
+        return getValidMovesFromPossibleMoves(piece, possibleLegalMoves)
     }
 
-    private fun computeLegalMovesForKnight(knight: Knight): Set<Pair<File, Int>> {
+    private fun computeMovesForKnight(knight: Knight): Set<Pair<File, Int>> {
         val (rank, file) = knight.run { rank() to file() }
         val (x, y) = PositionUtils.getCoordinatesFromFileRank(file, rank)
         val possibleLegalMoves = listOf(
@@ -57,7 +60,7 @@ class LegalMoveCalculator(private val boardPosition: BoardPosition) {
             x - 1 to y - 2,
         )
 
-        return getLegalMovesFromPossibleMoves(knight, possibleLegalMoves)
+        return getValidMovesFromPossibleMoves(knight, possibleLegalMoves)
     }
 
     private fun computeDiagonalMoves(piece: ChessPiece): Set<Pair<File, Int>> {
@@ -81,19 +84,18 @@ class LegalMoveCalculator(private val boardPosition: BoardPosition) {
         val lowerLeftMoves = generateDiagonalMoves(x, y, -1, -1).toMutableList()
 
         // Remove moves after encountering blocking pieces
-        removeMovesAfterBlockingPieces(upperRightMoves)
-        removeMovesAfterBlockingPieces(lowerRightMoves)
-        removeMovesAfterBlockingPieces(upperLeftMoves)
-        removeMovesAfterBlockingPieces(lowerLeftMoves)
+        removeMovesAfterBlockingPieces(piece, upperRightMoves)
+        removeMovesAfterBlockingPieces(piece, lowerRightMoves)
+        removeMovesAfterBlockingPieces(piece, upperLeftMoves)
+        removeMovesAfterBlockingPieces(piece, lowerLeftMoves)
 
         val possibleLegalMoves = upperRightMoves + lowerRightMoves + upperLeftMoves + lowerLeftMoves
-        return getLegalMovesFromPossibleMoves(piece, possibleLegalMoves)
+        return getValidMovesFromPossibleMoves(piece, possibleLegalMoves)
     }
 
     private fun computeMovesForQueen(queen: Queen): Set<Pair<File, Int>> =
         computeDiagonalMoves(queen) union computeLateralMoves(queen)
 
-    // TODO need to introduce more conditions here
     private fun computeMovesForKing(king: King): Set<Pair<File, Int>> {
         val (x, y) = PositionUtils.getCoordinatesFromFileRank(king.file(), king.rank())
 
@@ -108,10 +110,42 @@ class LegalMoveCalculator(private val boardPosition: BoardPosition) {
             x to y - 1,
         )
 
-        return getLegalMovesFromPossibleMoves(king, possibleMoves)
+        return getValidMovesFromPossibleMoves(king, possibleMoves)
     }
 
-    private fun getLegalMovesFromPossibleMoves(piece: ChessPiece, possibleMoves: List<Pair<Int, Int>>): Set<Pair<File, Int>> {
+    private fun computeMovesForPawn(pawn: Pawn): Set<Pair<File, Int>> {
+        val (x, y) = PositionUtils.getCoordinatesFromFileRank(pawn.file(), pawn.rank())
+
+        val possibleMoves = mutableListOf<Pair<Int, Int>>().apply {
+            when (pawn.color()) {
+                PieceColor.WHITE -> {
+                    add(x to y + 1)
+                    getPossiblePawnCaptureMove(x - 1, y + 1, pawn)?.let(::add)
+                    getPossiblePawnCaptureMove(x + 1, y + 1, pawn)?.let(::add)
+                    if (!pawn.hasMovedOnce()) add(x to y + 2)
+                }
+                PieceColor.BLACK -> {
+                    add(x to y - 1)
+                    getPossiblePawnCaptureMove(x - 1, y - 1, pawn)?.let(::add)
+                    getPossiblePawnCaptureMove(x + 1, y - 1, pawn)?.let(::add)
+                    if (!pawn.hasMovedOnce()) add(x to y - 2)
+                }
+            }
+        }
+
+        return getValidMovesFromPossibleMoves(pawn, possibleMoves)
+    }
+
+    private fun getPossiblePawnCaptureMove(x: Int, y: Int, pawn: Pawn): Pair<Int, Int>? {
+        return if (PositionUtils.isValidCoordinates(x to y)) {
+            val (file, rank) = PositionUtils.getFileRankFromCoordinates(x, y)
+            boardPosition.getPieceAtPosition(file, rank)?.takeIf { it.color() != pawn.color() }?.run {
+                x to y
+            }
+        } else null
+    }
+
+    private fun getValidMovesFromPossibleMoves(piece: ChessPiece, possibleMoves: List<Pair<Int, Int>>): Set<Pair<File, Int>> {
         return possibleMoves.filter(PositionUtils::isValidCoordinates)
             .filter { (x, y) -> !sameColorPieceOccupiesPosition(piece, x to y) }
             .map { (x, y) -> PositionUtils.getFileRankFromCoordinates(x, y) }
@@ -123,12 +157,20 @@ class LegalMoveCalculator(private val boardPosition: BoardPosition) {
         return boardPosition.getPieceAtPosition(rank, file)?.color() == piece.color()
     }
 
-    private fun removeMovesAfterBlockingPieces(moves: MutableList<Pair<Int, Int>>) {
-        val index = moves.indexOfFirst { (newX, newY) ->
-            val (ra, fi) = PositionUtils.getFileRankFromCoordinates(newX, newY)
-            boardPosition.isPositionOccupiedByPiece(ra, fi)
+    private fun removeMovesAfterBlockingPieces(piece: ChessPiece, moves: MutableList<Pair<Int, Int>>) {
+        var blockingPiece: ChessPiece? = null
+        var index = moves.indexOfFirst { (newX, newY) ->
+            val (file, rank) = PositionUtils.getFileRankFromCoordinates(newX, newY)
+            val pieceAtPosition = boardPosition.getPieceAtPosition(file, rank)
+            if (pieceAtPosition != null) {
+                blockingPiece = pieceAtPosition
+                true
+            } else false
         }
-        if (index in (0..BOARD_SIZE)) {
+        if (blockingPiece?.let { it.color() != piece.color() } == true) {
+           index++
+        }
+        if (index in (0 until BOARD_SIZE)) {
             moves.subList(index, moves.size).clear()
         }
     }
